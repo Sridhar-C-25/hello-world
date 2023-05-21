@@ -1,8 +1,36 @@
 const express = require("express");
 const app = express();
+var nodemailer = require('nodemailer');
 const port = process.env.PORT || 3001;
 
+// create reusable transporter object using the default SMTP transport
+var transport = nodemailer.createTransport({
+  host: "live.smtp.mailtrap.io",
+  port: 587,
+  auth: {
+    user: "api",
+    pass: "2368021545e8f062f9dda4bd2894d7d2"
+  }
+});
 app.get("/", (req, res) => res.send({msg:"hello world"}));
+app.get("/mail", (req, res) => {
+  const mailOptions = {
+    from: 'codeaprogram@gmail.com',
+    to: 'iamsmartsri@gmail.com',
+    subject: 'Test Email',
+    text: 'This is a test email sent using Nodemailer and Mailtrap!'
+  };
+  
+  transport.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Error:', error);
+      return res.send({msg:error})
+    } else {
+      console.log('Email sent:', info.response);
+      return res.send({msg:info})
+    }
+  });
+});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
